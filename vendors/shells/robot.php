@@ -156,8 +156,9 @@ class RobotShell extends Shell {
 		$this->__output('Running ' . $action . '... ', false);
 		$startTime = microtime(true);
 
-		Configure::write('App.baseUrl', $this->options['url']);
-		$_SERVER['HTTP_HOST'] = preg_replace('/^(https?:\/\/)?([^\/]+)/i', '\\2', $this->options['url']);
+		define('FULL_BASE_URL', preg_replace('|^(.+)/$|', '\\1', $this->options['url']));
+		Configure::write('App.baseUrl', preg_replace('|^https?://([^/]+)(.*)$|i', '\\2', $this->options['url']));
+		$_SERVER['HTTP_HOST'] = preg_replace('|^https?://([^/]+).*|i', '\\1', $this->options['url']);
 
 		$result = $this->Dispatcher->dispatch($action, array('robot' => $parameters, 'bare' => true, 'return' => true));
 
