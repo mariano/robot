@@ -1,5 +1,7 @@
 <?php
 
+App::import('Core', 'Router');
+
 class RobotTaskAction extends AppModel {
 	/**
 	 * hasMany bindings
