@@ -76,7 +76,9 @@ class RobotShell extends Shell {
 
 		$this->Dispatcher = new Dispatcher();
 
-		$this->_welcome($action, true);
+		if (empty($this->options['silent'])) {
+			$this->_welcome($action, true);
+		}
 
 		foreach(array('tasks', 'time') as $parameter) {
 			if (!empty($this->options[$parameter])) {
