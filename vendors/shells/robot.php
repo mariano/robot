@@ -60,11 +60,9 @@ class RobotShell extends Shell {
 
 		if (empty($this->options['url'])) {
 			$this->options['url'] = Configure::read('Robot.url');
-			if (empty($this->options['url'])) {
-				return $this->help('No URL specified (no -url parameter, nor config variable Robot.url)');
-			}
 		}
-		if (stripos($this->options['url'], 'http') !== 0) {
+
+		if (!empty($this->options['url']) && stripos($this->options['url'], 'http') !== 0) {
 			$this->options['url'] = 'http://' . $this->options['url'];
 		}
 
@@ -156,11 +154,13 @@ class RobotShell extends Shell {
 		$this->__output('Running ' . $action . '... ', false);
 		$startTime = microtime(true);
 
-		if (!defined('FULL_BASE_URL')) {
-			define('FULL_BASE_URL', preg_replace('|^(.+)/$|', '\\1', $this->options['url']));
+		if (!empty($this->options['url'])) {
+			if (!defined('FULL_BASE_URL')) {
+				define('FULL_BASE_URL', preg_replace('|^(.+)/$|', '\\1', $this->options['url']));
+			}
+			Configure::write('App.baseUrl', preg_replace('|^https?://([^/]+)(.*)$|i', '\\2', $this->options['url']));
+			$_SERVER['HTTP_HOST'] = preg_replace('|^https?://([^/]+).*|i', '\\1', $this->options['url']);
 		}
-		Configure::write('App.baseUrl', preg_replace('|^https?://([^/]+)(.*)$|i', '\\2', $this->options['url']));
-		$_SERVER['HTTP_HOST'] = preg_replace('|^https?://([^/]+).*|i', '\\1', $this->options['url']);
 
 		$result = $this->Dispatcher->dispatch($action, array('robot' => $parameters, 'bare' => true, 'return' => true));
 

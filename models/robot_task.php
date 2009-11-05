@@ -103,13 +103,19 @@ class RobotTask extends AppModel {
 			$id = $this->id;
 		}
 
-		$task = array($this->alias => array(
-			'id' => $id,
-			'status' => ($success ? 'completed' : 'failed'),
-			'finished' => date('Y-m-d H:i:s')
-		));
-
-		return $this->save($task, true, array_keys($task[$this->alias]));
+		$result = false;
+		$keep = Configure::read('Robot.keep');
+		if (!$success || !empty($keep)) {
+			$task = array($this->alias => array(
+				'id' => $id,
+				'status' => ($success ? 'completed' : 'failed'),
+				'finished' => date('Y-m-d H:i:s')
+			));
+			$result = $this->save($task, true, array_keys($task[$this->alias]));
+		} else {
+			$result = $this->delete($id);
+		}
+		return $result;
 	}
 
 	/**
