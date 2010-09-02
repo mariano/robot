@@ -1,6 +1,9 @@
 <?php
 
 App::import('Core', 'Dispatcher');
+if (!class_exists('Dispatcher')) {
+	require CAKE . 'dispatcher.php';
+}
 
 class RobotShell extends Shell {
 	public $Dispatcher;
