@@ -133,9 +133,9 @@ class RobotShell extends Shell {
 					$this->__output('Processing task ' . $task['RobotTask']['id']);
 					$this->RobotTask->started($task['RobotTask']['id']);
 
-					$success = $this->__execute($task['RobotTaskAction']['action'], (!empty($task['RobotTask']['parameters']) ? $task['RobotTask']['parameters'] : array()));
+					$success = $this->__execute($task['RobotTask']['action'], (!empty($task['RobotTask']['parameters']) ? $task['RobotTask']['parameters'] : array()));
 					if (!$success) {
-						$this->__error('Error running task ' . $task['RobotTask']['id'] . ' (action ' . $task['RobotTaskAction']['action'] . ')');
+						$this->__error('Error running task ' . $task['RobotTask']['id'] . ' (action ' . $task['RobotTask']['action'] . ')');
 					}
 
 					$this->__output('Setting task ' . $task['RobotTask']['id'] . ' as ' . ($success ? 'completed' : 'failed'));

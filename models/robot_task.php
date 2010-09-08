@@ -6,7 +6,11 @@ class RobotTask extends AppModel {
 	 *
 	 * @var array
 	 */
-	public $belongsTo = array('Robot.RobotTaskAction');
+	public $belongsTo = array(
+		'Robot.RobotTaskAction' => array(
+			'type' => 'INNER'
+		)
+	);
 
 	/**
 	 * Fields to be compressed. Can be overriden with configure variable Robot.compress
@@ -57,6 +61,8 @@ class RobotTask extends AppModel {
 
 		$task = array($this->alias => array(
 			'robot_task_action_id' => $taskAction['RobotTaskAction']['id'],
+			'action' => $taskAction['RobotTaskAction']['action'],
+			'weight' => $taskAction['RobotTaskAction']['weight'],
 			'status' => 'pending',
 			'scheduled' => date('Y-m-d H:i:s', $scheduled),
 			'parameters' => (!empty($parameters) ? serialize($parameters) : null)
@@ -140,13 +146,18 @@ class RobotTask extends AppModel {
 
 			$type = $conditions;
 			$options = Set::merge(array(
-				'recursive' => 0
-				, 'conditions' => array(
+				'recursive' => 0,
+				'fields' => array(
+					$this->alias . '.id',
+					$this->alias . '.parameters',
+					$this->alias . '.action',
+				),	
+				'conditions' => array(
 					$this->alias . '.status' => 'pending',
 					$this->alias . '.scheduled <=' => date('Y-m-d H:i:s')
 				),
 				'order' => array(
-					'RobotTaskAction.weight' => 'asc',
+					$this->alias . '.weight' => 'asc',
 					$this->alias . '.scheduled' => 'asc'
 				),
 				'limit' => $limit . ' FOR UPDATE'
