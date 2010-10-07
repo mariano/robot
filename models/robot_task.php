@@ -65,7 +65,8 @@ class RobotTask extends AppModel {
 			'weight' => $taskAction['RobotTaskAction']['weight'],
 			'status' => 'pending',
 			'scheduled' => date('Y-m-d H:i:s', $scheduled),
-			'parameters' => (!empty($parameters) ? serialize($parameters) : null)
+			'parameters' => (!empty($parameters) ? serialize($parameters) : null),
+			'debug' => serialize(Configure::read('Robot.debug')),
 		));
 
 		$this->create();

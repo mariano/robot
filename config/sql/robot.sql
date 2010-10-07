@@ -14,6 +14,8 @@ CREATE TABLE `robot_tasks`(
     `weight` INT NOT NULL,
     `status` VARCHAR(255) NOT NULL default 'pending',
     `parameters` BLOB default NULL,
+	-- debug is optional
+    `debug` BLOB default NULL,
     `scheduled` DATETIME NOT NULL,
     `started` DATETIME default NULL,
     `finished` DATETIME default NULL,
