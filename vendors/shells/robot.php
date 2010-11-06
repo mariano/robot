@@ -78,6 +78,7 @@ class RobotShell extends Shell {
 		}
 
 		$this->Dispatcher = new Dispatcher();
+		$this->Dispatcher->base = '';
 
 		if (empty($this->options['silent'])) {
 			$this->_welcome($action, true);
