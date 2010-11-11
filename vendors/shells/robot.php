@@ -137,19 +137,24 @@ class RobotShell extends Shell {
 					$success = $this->__execute($task['RobotTask']['action'], (!empty($task['RobotTask']['parameters']) ? $task['RobotTask']['parameters'] : array()));
 					if (!$success) {
 						$message = 'Error running task ' . $task['RobotTask']['id'] . ' (action ' . $task['RobotTask']['action'] . ')';
-						if (!empty($task['RobotTask']['debug'])) {
+						$debug = Configure::read('Robot.debug');
+						if (empty($debug) && !empty($task['RobotTask']['debug'])) {
 							$debug = unserialize($task['RobotTask']['debug']);
+						}
+
+						if (!empty($debug)) {
 							if (is_array($debug)) {
-								$message .= ' debug: '.print_r($debug, true);
+								$message .= ' (debug: '.print_r($debug, true) . ')';
 							} else {
-								$message .= ' (debug '.$debug.')';
+								$message .= ' ('.$debug.')';
 							}
 						}
+
 						$this->__error($message);
 					}
 
 					$this->__output('Setting task ' . $task['RobotTask']['id'] . ' as ' . ($success ? 'completed' : 'failed'));
-					$this->RobotTask->finished($task['RobotTask']['id'], $success);
+					$this->RobotTask->finished($task['RobotTask']['id'], $success, !empty($debug) ? $debug : null);
 
 					$tasks++;
 				}

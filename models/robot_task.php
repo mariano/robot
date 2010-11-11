@@ -103,9 +103,10 @@ class RobotTask extends AppModel {
 	 * Set a task as finished
 	 *
 	 * @param string $id Task ID
+	 * @param mixed Optional debug information to store
 	 * @return mixed Result of save() call
 	 */
-	public function finished($id = null, $success = true) {
+	public function finished($id = null, $success = true, $debug = null) {
 		if (empty($id)) {
 			$id = $this->id;
 		}
@@ -118,6 +119,11 @@ class RobotTask extends AppModel {
 				'status' => ($success ? 'completed' : 'failed'),
 				'finished' => date('Y-m-d H:i:s')
 			));
+
+			if (!empty($debug)) {
+				$task[$this->alias] = $debug;
+			}
+
 			$result = $this->save($task, true, array_keys($task[$this->alias]));
 		} else {
 			$result = $this->delete($id);
@@ -152,7 +158,7 @@ class RobotTask extends AppModel {
 					$this->alias . '.id',
 					$this->alias . '.parameters',
 					$this->alias . '.action',
-				),	
+				),
 				'conditions' => array(
 					$this->alias . '.status' => 'pending',
 					$this->alias . '.scheduled <=' => date('Y-m-d H:i:s')
