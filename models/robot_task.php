@@ -121,7 +121,7 @@ class RobotTask extends AppModel {
 			));
 
 			if (!empty($debug)) {
-				$task[$this->alias] = $debug;
+				$task[$this->alias]['debug'] = $debug;
 			}
 
 			$result = $this->save($task, true, array_keys($task[$this->alias]));
