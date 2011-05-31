@@ -182,12 +182,19 @@ class RobotShell extends Shell {
 			$_SERVER['HTTP_HOST'] = preg_replace('|^https?://([^/]+).*|i', '\\1', $this->options['url']);
 		}
 
-		$result = $this->Dispatcher->dispatch($action, array('robot' => $parameters, 'bare' => true, 'return' => true));
+        try {
+            $result = $this->Dispatcher->dispatch($action, array('robot' => $parameters, 'bare' => true, 'return' => true));
+            $success = $result !== false;
+        } catch (Exception $e) {
+            $result = sprintf('Exception: "%s" in %s line %s.', $e->getMessage(), $e->getFile(), $e->getLine());
+            $success = false;
+        }
 
 		$endTime = microtime(true);
-		$this->__output(($result !== false ? 'DONE' : 'FAILED') . ' (' . number_format(($endTime - $startTime) * 1000, 2) . ' ms.)', true, false);
+        $outputFunc = $success ? '__output' : '__error';
+		$this->{$outputFunc}(($success ? 'DONE' : 'FAILED') . ' (' . number_format(($endTime - $startTime) * 1000, 2) . ' ms.)', true, false);
 
-		if (!empty($this->options['result'])) {
+		if (!$success || !empty($this->options['result'])) {
 			if (is_string($result)) {
 				$lines = explode("\n", $result);
 				foreach($lines as $i => $line) {
@@ -197,10 +204,10 @@ class RobotShell extends Shell {
 			} else {
 				$output = var_export($result, true);
 			}
-			$this->__output("\t" . 'Result: (' . $output . ')');
+			$this->{$outputFunc}("\t" . 'Result: (' . $output . ')');
 		}
 
-		return ($result !== false);
+		return $success;
 	}
 
 	private function __hr($time = true, $force = false) {
